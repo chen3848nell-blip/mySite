@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山與海的呼喚 —— 從百岳到深藍，開啟你的野性視界</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            50: '#f2f7f4',
+                            100: '#e1ede6',
+                            600: '#2d6a4f',
+                            800: '#1b4332',
+                            900: '#081c15',
+                        },
+                        ocean: {
+                            50: '#f0f8ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        earth: {
+                            100: '#f5f2eb',
+                            500: '#b08968',
+                            800: '#7f5539',
+                        },
+                        gold: '#d4af37'
+                    },
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .glass-panel-dark {
+            background: rgba(8, 28, 21, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-bg {
+            background: linear-gradient(180deg, rgba(8, 28, 21, 0.4) 0%, rgba(8, 28, 21, 0.85) 100%), 
+                        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+        }
+        .text-glow {
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #081c15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d6a4f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52b788;
+        }
+    </style>
+</head>
+<body class="font-sans bg-stone-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased selection:bg-forest-600 selection:text-white transition-colors duration-300">
+
+    <!-- Background Audio Element -->
+    <audio id="bg-audio" loop preload="none">
+        <source src="https://img.ai365.fans/artworks/df9cfa55-2836-43db-931f-c52b1fea2dde/4kbdtn8hths.m4a" type="audio/mp4">
+        您的瀏覽器不支援音訊播放。
+    </audio>
+
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-forest-800 text-gold flex items-center justify-center font-serif text-xl font-bold border border-gold/30 group-hover:scale-105 transition-transform">
+                        山海
+                    </div>
+                    <span class="font-serif font-bold text-xl tracking-wider text-white group-hover:text-gold transition-colors">
+                        山與海的呼喚
+                    </span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8 font-medium text-stone-200 text-sm tracking-wide">
+                    <a href="#about" class="hover:text-gold transition-colors">品牌故事</a>
+                    <a href="#fabr" class="hover:text-gold transition-colors">核心實力</a>
+                    <a href="#pillars" class="hover:text-gold transition-colors">三大核心區塊</a>
+                    <a href="#explore" class="hover:text-gold transition-colors">路線資料庫</a>
+                    <a href="#stats" class="hover:text-gold transition-colors">探險實績</a>
+                </div>
+
+                <!-- Action Button, Audio & Dark Mode Toggle -->
+                <div class="hidden md:flex items-center gap-3">
+                    <!-- Audio Toggle Button -->
+                    <button id="sound-toggle" onclick="toggleAudio()" class="px-3.5 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-gold text-xs flex items-center gap-2 transition-all bg-black/20 backdrop-blur-md">
+                        <i class="fa-solid fa-volume-xmark" id="sound-icon"></i>
+                        <span id="sound-text">背景音樂</span>
+                    </button>
+
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle" onclick="toggleTheme()" class="w-9 h-9 rounded-full border border-white/20 text-white/90 hover:text-gold hover:border-gold flex items-center justify-center text-sm transition-all bg-black/20 backdrop-blur-md" title="切換深淺模式">
+                        <i class="fa-solid fa-moon" id="theme-icon"></i>
+                    </button>
+
+                    <a href="#join" class="bg-forest-600 hover:bg-forest-800 text-white px-5 py-2.5 rounded-full font-medium text-sm transition-all shadow-lg hover:shadow-forest-600/30 border border-forest-500">
+                        開啟野性視界
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-2">
+                    <button onclick="toggleTheme()" class="text-white hover:text-gold p-2">
+                        <i class="fa-solid fa-moon" id="theme-icon-mobile"></i>
+                    </button>
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="text-white hover:text-gold p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden glass-panel-dark border-b border-white/10 px-4 pt-2 pb-6 space-y-3">
+            <a href="#about" onclick="toggleMobileMenu()" class="block text-stone-200 hover:text-gold py-2 border-b border-white/5">品牌故事</a>
+            <a href="#fabr" onclick="toggleMobileMenu()" class="block text-stone-200 hover:text-gold py-2 border-b border-white/5">核心實力</a>
+            <a href="#pillars" onclick="toggleMobileMenu()" class="block text-stone-200 hover:text-gold py-2 border-b border-white/5">三大核心區塊</a>
+            <a href="#explore" onclick="toggleMobileMenu()" class="block text-stone-200 hover:text-gold py-2 border-b border-white/5">路線資料庫</a>
+            <a href="#stats" onclick="toggleMobileMenu()" class="block text-stone-200 hover:text-gold py-2 border-b border-white/5">探險實績</a>
+            <div class="pt-2 flex flex-col gap-3">
+                <button id="sound-toggle-mobile" onclick="toggleAudio()" class="w-full text-center border border-white/20 text-white py-2 rounded-full text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-volume-xmark" id="sound-icon-mobile"></i>
+                    <span id="sound-text-mobile">背景音樂</span>
+                </button>
+                <a href="#join" onclick="toggleMobileMenu()" class="text-center bg-forest-600 text-white py-2.5 rounded-full font-medium text-sm">
+                    開啟野性視界
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative min-h-screen hero-bg flex items-center justify-center text-center px-4 overflow-hidden pt-20">
+        <!-- Overlay Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-t from-forest-900 via-transparent to-black/40"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto space-y-8 py-16">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-gold text-xs sm:text-sm font-medium tracking-widest uppercase animate-fade-in">
+                <i class="fa-solid fa-compass text-xs"></i> 台灣山海自然深度體驗平台
+            </div>
+            
+            <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl text-white font-bold tracking-tight leading-tight text-glow">
+                山與海的呼喚
+                <span class="block text-2xl sm:text-4xl md:text-5xl font-light text-stone-300 mt-4 font-sans">
+                    找回你與土地的最初連結
+                </span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-stone-300 max-w-2xl mx-auto font-light leading-relaxed">
+                從百岳登頂的巍峨脈動，到無垠深藍的微光起伏。<br class="hidden sm:inline">
+                我們帶你跨越都市霓虹，踏上安全、深刻而永續的荒野探索。
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <a href="#pillars" class="w-full sm:w-auto bg-gold hover:bg-yellow-600 text-forest-900 font-bold px-8 py-4 rounded-full shadow-xl hover:shadow-gold/20 transition-all transform hover:-translate-y-0.5 text-base">
+                    探索三大板塊
+                </a>
+                <a href="#explore" class="w-full sm:w-auto glass-panel-dark text-white border border-white/30 hover:bg-white/20 font-medium px-8 py-4 rounded-full transition-all text-base flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-map-location-dot"></i> 搜尋探險路線
+                </a>
+            </div>
+
+            <!-- Scroll Down Indicator -->
+            <div class="pt-12 animate-bounce">
+                <a href="#about" class="text-white/60 hover:text-white transition-colors">
+                    <i class="fa-solid fa-chevron-down text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="about" class="py-24 bg-stone-100 dark:bg-slate-800 transition-colors duration-300 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-14 shadow-xl border border-stone-200/80 dark:border-slate-700/80 transition-colors duration-300">
+                <div class="text-center space-y-4 mb-10">
+                    <span class="text-forest-600 dark:text-emerald-400 font-semibold tracking-widest text-sm uppercase">About Us</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl text-forest-900 dark:text-emerald-100 font-bold">品牌故事</h2>
+                    <div class="w-16 h-1 bg-gold mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Brand Story Image -->
+                <div class="mb-10 rounded-2xl overflow-hidden shadow-lg border border-stone-200/60 dark:border-slate-700 max-h-[480px]">
+                    <img src="https://img.ai365.fans/cdn-cgi/image/width=1400,quality=90,format=auto/artworks/df9cfa55-2836-43db-931f-c52b1fea2dde/omzh61osxa.png" 
+                         alt="山與海的呼喚 - 品牌故事" 
+                         class="w-full h-full object-cover transform hover:scale-102 transition-transform duration-700"
+                         onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80'">
+                </div>
+
+                <div class="prose prose-lg text-stone-600 dark:text-stone-300 max-w-none space-y-6 text-justify sm:text-left leading-relaxed font-light">
+                    <p class="text-xl text-forest-800 dark:text-emerald-300 font-medium text-center font-serif italic border-l-4 border-gold pl-4 py-1 bg-stone-50 dark:bg-slate-800/50 rounded-r">
+                        「每個人心中，都有一座想攀登的山，與一片想放逐的海。」
+                    </p>
+                    <p>
+                        在繁華的都市霓虹中，我們常常忘記了風的聲音、浪的呼吸，以及雙腳踏在泥土上的踏實感。「山與海的呼喚」是一個專為熱愛自然、渴望探索的靈魂所打造的數位棲地。
+                    </p>
+                    <p>
+                        我們相信，台灣的山林與海洋擁有治癒人心的力量。透過深度的影像紀實、專業的路線指南與永續的生態觀點，我們將大自然的壯闊與細緻帶入你的螢幕，進而引領你的腳步，走向真正的荒野。
+                    </p>
+                    <p class="font-medium text-forest-900 dark:text-emerald-200 pt-2 text-center sm:text-left">
+                        這不僅僅是一個網站，而是一場由內而外的探索旅程。當山林張開雙臂，當海洋翻湧浪花，你，聽見呼喚了嗎？
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="fabr" class="py-24 bg-forest-900 text-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-4 mb-16">
+                <span class="text-gold font-semibold tracking-widest text-sm uppercase">Core Value</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white">從百岳到深藍，開啟你的野性視界</h2>
+                <p class="text-stone-300 max-w-2xl mx-auto">我們為何是戶外愛好者最信賴的探險夥伴？透過 FABR 架構帶你深入了解</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Features -->
+                <div class="glass-panel-dark p-8 rounded-2xl border border-white/10 hover:border-gold/50 transition-all hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-forest-600/50 rounded-xl flex items-center justify-center text-gold text-2xl mb-6 border border-gold/20">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span class="text-gold text-xs font-bold tracking-widest uppercase block mb-1">Feature 屬性特色</span>
+                    <h3 class="text-xl font-bold mb-3 text-white">全台山海資料庫</h3>
+                    <p class="text-stone-300 text-sm leading-relaxed">
+                        涵蓋百岳攀登、古道縱走、自由潛水與衝浪據點的全方位地形資料庫，提供全台最完整的戶外路線地圖。
+                    </p>
+                </div>
+
+                <!-- Advantages -->
+                <div class="glass-panel-dark p-8 rounded-2xl border border-white/10 hover:border-gold/50 transition-all hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-forest-600/50 rounded-xl flex items-center justify-center text-gold text-2xl mb-6 border border-gold/20">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <span class="text-gold text-xs font-bold tracking-widest uppercase block mb-1">Advantage 獨家優勢</span>
+                    <h3 class="text-xl font-bold mb-3 text-white">專家審定 3D 軌跡</h3>
+                    <p class="text-stone-300 text-sm leading-relaxed">
+                        由資深嚮導與環境科學家共同編寫，比一般旅遊網站提供更精準的 3D GPX 軌跡與安全防護圖文指南。
+                    </p>
+                </div>
+
+                <!-- Benefits -->
+                <div class="glass-panel-dark p-8 rounded-2xl border border-white/10 hover:border-gold/50 transition-all hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-forest-600/50 rounded-xl flex items-center justify-center text-gold text-2xl mb-6 border border-gold/20">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <span class="text-gold text-xs font-bold tracking-widest uppercase block mb-1">Benefit 使用者利益</span>
+                    <h3 class="text-xl font-bold mb-3 text-white">降低風險 突破極限</h3>
+                    <p class="text-stone-300 text-sm leading-relaxed">
+                        有效降低戶外探索門檻與潛在風險。新手能安心踏出第一步，老手能精準發掘獨家祕境與挑戰極限。
+                    </p>
+                </div>
+
+                <!-- Results -->
+                <div class="glass-panel-dark p-8 rounded-2xl border border-white/10 hover:border-gold/50 transition-all hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-forest-600/50 rounded-xl flex items-center justify-center text-gold text-2xl mb-6 border border-gold/20">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <span class="text-gold text-xs font-bold tracking-widest uppercase block mb-1">Result 實績證明</span>
+                    <h3 class="text-xl font-bold mb-3 text-white">10,000+ 完成初體驗</h3>
+                    <p class="text-stone-300 text-sm leading-relaxed">
+                        已陪伴超過一萬名玩家安全完成首次百岳縱走或水下潛水體驗，社群累積逾萬張真實探險軌跡與相片。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pillars" class="py-24 bg-stone-50 dark:bg-slate-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-4 mb-20">
+                <span class="text-forest-600 dark:text-emerald-400 font-semibold tracking-widest text-sm uppercase">Explore Domains</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest-900 dark:text-emerald-100">三大核心區塊</h2>
+                <p class="text-stone-600 dark:text-stone-400 max-w-xl mx-auto">走進高山、潛入深藍、印下足跡 —— 展開你的三大視角</p>
+            </div>
+
+            <div class="space-y-20">
+                <!-- Pillar 1: 翠綠之巔 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[420px] group">
+                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80" alt="翠綠之巔" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-forest-900/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <span class="bg-forest-600 text-xs px-3 py-1 rounded-full font-medium">高山百岳 • 古道健行</span>
+                            <h4 class="text-2xl font-serif font-bold mt-2">The Peaks 翠綠之巔</h4>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 text-forest-600 dark:text-emerald-400 font-bold text-lg">
+                            <i class="fa-solid fa-mountain"></i> 翠綠之巔 (The Peaks)
+                        </div>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100 leading-snug">
+                            「走進千山萬壑，感受時間的沉澱與登頂的呼吸。」
+                        </h3>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            這是一場跨越時間與空間的自我追尋。當你的雙腳踏上蜿蜒的山徑，遠離了都市的紛擾與嘈雜，便步入了這座島嶼最神聖的綠色殿堂。在這裡，每一步前行都是與古老土地的對話，每一次仰望都能看見時間在稜線上留下的壯麗痕跡。
+                        </p>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            我們崇敬山嶽，不僅僅為了征服那傲然挺立的台灣百岳。在這裡，我們沿著先人踩踏出的歷史古道徐行，在斑駁的樹影與遺址中，聆聽歲月沉澱下來的故事；我們走進迷霧繚繞的原始森林，實踐一場深刻的森林美學。當你歷經千山萬壑的考驗，終於站在雲海之巔，頂峰那凜冽而純淨的風，將吹散所有迷茫，讓你在吐納之間重新找回生命的掌控感。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pillar 2: 湛藍之境 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center lg:flex-row-reverse">
+                    <div class="space-y-6 order-2 lg:order-1">
+                        <div class="inline-flex items-center gap-2 text-ocean-800 dark:text-sky-400 font-bold text-lg">
+                            <i class="fa-solid fa-water"></i> 湛藍之境 (The Oceans)
+                        </div>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100 leading-snug">
+                            「潛入無垠深藍，隨浪潮起伏找回內心的平靜。」
+                        </h3>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            這是一場走入海洋深處的感官與心靈旅程。當你告別喧囂的陸地，躍入那片無邊際的湛藍，世界便瞬間安靜了下來。在這裡，每一次的呼吸都變得清晰，每一次的浪潮起伏都在溫柔地拂去指尖的焦慮。
+                        </p>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            我們熱愛海洋，不僅僅迷戀它海面上的波欄壯闊。在這裡，我們隨著衝浪板迎風破浪，在速度與平衡之間感受生命的律動；我們穿戴起潛水裝備，無聲地潛入水晶般剔透的水下世界，與無數繽紛的海洋生物並肩悠游。在鯨豚的遠歌與珊瑚礁的呼吸中，我們重新找回了在都市裡遺失的內心平靜。
+                        </p>
+                    </div>
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[420px] group order-1 lg:order-2">
+                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80" alt="湛藍之境" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-ocean-900/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <span class="bg-ocean-500 text-xs px-3 py-1 rounded-full font-medium">海洋生態 • 潛水衝浪</span>
+                            <h4 class="text-2xl font-serif font-bold mt-2">The Oceans 湛藍之境</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 3: 島嶼足跡 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[420px] group">
+                        <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=1200&q=80" alt="島嶼足跡" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <span class="bg-earth-500 text-xs px-3 py-1 rounded-full font-medium">裝備指南 • 安全知識 • 永續思維</span>
+                            <h4 class="text-2xl font-serif font-bold mt-2">The Journeys 島嶼足跡</h4>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 text-earth-800 dark:text-amber-400 font-bold text-lg">
+                            <i class="fa-solid fa-shoe-prints"></i> 島嶼足跡 (The Journeys)
+                        </div>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100 leading-snug">
+                            「每一次出發，都是對生命邊界的溫柔探索。」
+                        </h3>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            這是一份陪伴你走向荒野、走向未知的實踐指南。走進大自然不需要盲目的勇氣，而是需要智慧的沉澱與做足準備的底氣。當你跨出舒適圈的那一刻起，生命便在向外延伸，在山海的懷抱中，我們不斷打破墨守成規的自己，溫柔地觸碰並拓寬生活的邊界。
+                        </p>
+                        <p class="text-stone-600 dark:text-stone-300 leading-relaxed text-justify">
+                            我們陪伴探索，不僅僅著眼於抵達遙遠的目的地。在這裡，我們為你梳理專業的戶外裝備指南，從材質機能的精準解析到輕量化的系統搭配；我們傳遞扎實的野外安全知識，涵蓋天氣判讀、離線地圖實操到風險管理，確保你每次在面對自然變幻時，都能擁有從容應對的智慧，安然出發、平安歸來。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="explore" class="py-24 bg-stone-100 dark:bg-slate-800/80 border-y border-stone-200 dark:border-slate-700/80 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-forest-600 dark:text-emerald-400 font-semibold tracking-widest text-sm uppercase">Interactive Trails</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest-900 dark:text-emerald-100 mt-1">熱門山海探索路線</h2>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap gap-2" id="filter-buttons">
+                    <button onclick="filterRoutes('all')" class="filter-btn active bg-forest-800 text-white px-5 py-2 rounded-full text-sm font-medium transition-all">全選</button>
+                    <button onclick="filterRoutes('mountain')" class="filter-btn bg-white dark:bg-slate-700 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-slate-600 px-5 py-2 rounded-full text-sm font-medium transition-all">高山百岳</button>
+                    <button onclick="filterRoutes('ocean')" class="filter-btn bg-white dark:bg-slate-700 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-slate-600 px-5 py-2 rounded-full text-sm font-medium transition-all">潛水衝浪</button>
+                    <button onclick="filterRoutes('trail')" class="filter-btn bg-white dark:bg-slate-700 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-slate-600 px-5 py-2 rounded-full text-sm font-medium transition-all">古道縱走</button>
+                </div>
+            </div>
+
+            <!-- Route Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="route-grid">
+                <!-- Route Card 1 -->
+                <div class="route-card mountain bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-stone-200 dark:border-slate-800 flex flex-col">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=800&q=80" alt="雪山主東峰" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                        <span class="absolute top-4 left-4 bg-forest-800 text-white text-xs font-bold px-3 py-1 rounded-full">高山百岳</span>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-gold text-xs font-medium px-2.5 py-1 rounded-full">中高難度</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-900 dark:text-stone-100 font-serif">雪山主東峰圈谷縱走</h3>
+                            <p class="text-stone-500 dark:text-stone-400 text-xs mt-1"><i class="fa-solid fa-location-dot text-forest-600 dark:text-emerald-400 mr-1"></i>台中市和平區 / 苗栗縣泰安鄉</p>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm mt-3 line-clamp-2">穿梭黑森林的幽靜，親眼見證冷杉林與冷冽冰斗圈谷的浩瀚景致。</p>
+                        </div>
+                        <div class="pt-4 border-t border-stone-100 dark:border-slate-800 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                            <span><i class="fa-solid fa-clock mr-1"></i>3 天 2 夜</span>
+                            <span><i class="fa-solid fa-route mr-1"></i>21.8 km</span>
+                            <button onclick="openModal('雪山主東峰圈谷縱走', '高山百岳', '3天2夜 / 21.8 km', '雪山為台灣第二高峰，路線包含著名的黑森林與雪山一號圈谷。需申請入園與入山證。本平台提供完整 3D GPX 路線圖檔與水源狀況即時回報。')" class="text-forest-600 dark:text-emerald-400 font-bold hover:text-forest-800 dark:hover:text-emerald-300">
+                                路線細節 <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Route Card 2 -->
+                <div class="route-card ocean bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-stone-200 dark:border-slate-800 flex flex-col">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80" alt="綠島自由潛水" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                        <span class="absolute top-4 left-4 bg-ocean-800 text-white text-xs font-bold px-3 py-1 rounded-full">潛水衝浪</span>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-gold text-xs font-medium px-2.5 py-1 rounded-full">初中階體驗</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-900 dark:text-stone-100 font-serif">綠島柴口與石朗水下玻璃海</h3>
+                            <p class="text-stone-500 dark:text-stone-400 text-xs mt-1"><i class="fa-solid fa-location-dot text-ocean-600 dark:text-sky-400 mr-1"></i>台東縣綠島鄉</p>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm mt-3 line-clamp-2">能見度突破 30 米的玻璃海，探訪海底郵筒與千年大香菇珊瑚體。</p>
+                        </div>
+                        <div class="pt-4 border-t border-stone-100 dark:border-slate-800 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                            <span><i class="fa-solid fa-clock mr-1"></i>半日~單日</span>
+                            <span><i class="fa-solid fa-water mr-1"></i>水深 5-20m</span>
+                            <button onclick="openModal('綠島柴口與石朗水下玻璃海', '潛水衝浪', '半日~單日 / 能見度30m+', '綠島擁有黑潮支流帶來的清澈水質，柴口與石朗為世界級潛點。提醒：請務必塗抹海洋友善防曬，共同守護珊瑚礁生態。')" class="text-ocean-600 dark:text-sky-400 font-bold hover:text-ocean-800 dark:hover:text-sky-300">
+                                路線細節 <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Route Card 3 -->
+                <div class="route-card trail bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-stone-200 dark:border-slate-800 flex flex-col">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" alt="阿朗壹古道" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                        <span class="absolute top-4 left-4 bg-earth-800 text-white text-xs font-bold px-3 py-1 rounded-full">古道縱走</span>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-gold text-xs font-medium px-2.5 py-1 rounded-full">大眾健行</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-900 dark:text-stone-100 font-serif">阿塱壹古道 山海交界尋蹤</h3>
+                            <p class="text-stone-500 dark:text-stone-400 text-xs mt-1"><i class="fa-solid fa-location-dot text-earth-800 dark:text-amber-400 mr-1"></i>屏東縣牡丹鄉 ~ 台東縣達仁鄉</p>
+                            <p class="text-stone-600 dark:text-stone-300 text-sm mt-3 line-clamp-2">台灣最後無公路貫穿的原始海岸線，腳踏南田石聆聽大海的韻律。</p>
+                        </div>
+                        <div class="pt-4 border-t border-stone-100 dark:border-slate-800 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                            <span><i class="fa-solid fa-clock mr-1"></i>單日 5-6 小時</span>
+                            <span><i class="fa-solid fa-route mr-1"></i>8.4 km</span>
+                            <button onclick="openModal('阿塱壹古道 山海交界尋蹤', '古道縱走', '單日 5-6小時 / 8.4 km', '連接屏東與台東的百年古道，保留了台灣最美海岸地貌與鵝卵石灘。進入旭海觀音鼻自然保留區需提前申請解說員陪同。')" class="text-earth-800 dark:text-amber-400 font-bold hover:text-earth-500 dark:hover:text-amber-300">
+                                路線細節 <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="py-20 bg-forest-800 text-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-4xl sm:text-5xl font-extrabold text-gold font-serif mb-2">10,000+</div>
+                    <div class="text-stone-300 text-sm sm:text-base">完成首次百岳/潛水體驗</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl sm:text-5xl font-extrabold text-gold font-serif mb-2">350+</div>
+                    <div class="text-stone-300 text-sm sm:text-base">收錄山海 GPX 軌跡</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl sm:text-5xl font-extrabold text-gold font-serif mb-2">100%</div>
+                    <div class="text-stone-300 text-sm sm:text-base">專家嚮導實地檢測</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl sm:text-5xl font-extrabold text-gold font-serif mb-2">25,000+</div>
+                    <div class="text-stone-300 text-sm sm:text-base">戶外社群足跡照片</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="join" class="py-24 bg-stone-900 dark:bg-black text-white relative overflow-hidden transition-colors duration-300">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="text-gold font-semibold tracking-widest text-sm uppercase">Join The Adventure</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-bold mt-2 mb-6">準備好回應大自然的呼喚了嗎？</h2>
+            <p class="text-stone-300 text-lg mb-10 max-w-2xl mx-auto">
+                訂閱「山與海的呼喚」週報，優先獲得私房路線圖檔、最新氣象預警以及戶外輕量化裝備評測。
+            </p>
+
+            <form onsubmit="handleSubscribe(event)" class="max-w-md mx-auto space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="email" required placeholder="輸入您的 Email 地址" class="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-stone-400 focus:outline-none focus:border-gold">
+                    <button type="submit" class="bg-gold hover:bg-yellow-600 text-forest-900 font-bold px-8 py-3.5 rounded-full transition-all shadow-lg">
+                        免費加入
+                    </button>
+                </div>
+                <p id="subscribe-msg" class="text-xs text-gold hidden">✓ 感謝訂閱！探險指南已發送至您的電子信箱。</p>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-black text-stone-400 py-12 border-t border-white/10 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-4 md:col-span-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-forest-800 text-gold flex items-center justify-center font-serif text-sm font-bold border border-gold/30">
+                        山海
+                    </div>
+                    <span class="font-serif font-bold text-lg text-white">山與海的呼喚</span>
+                </div>
+                <p class="text-stone-400 text-xs max-w-sm leading-relaxed">
+                    專為熱愛自然、渴望探索的靈魂打造的數位棲地。以永續態度與專業知識，引領每一步走向荒野的足跡。
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-3">快速連結</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#about" class="hover:text-gold transition-colors">品牌故事</a></li>
+                    <li><a href="#fabr" class="hover:text-gold transition-colors">核心實力 (FABR)</a></li>
+                    <li><a href="#pillars" class="hover:text-gold transition-colors">三大核心區塊</a></li>
+                    <li><a href="#explore" class="hover:text-gold transition-colors">路線資料庫</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-3">社群與條款</h4>
+                <div class="flex gap-4 text-lg text-stone-300 mb-4">
+                    <a href="https://www.instagram.com/chen3848nell/" target="_blank" rel="noopener noreferrer" class="hover:text-gold transition-colors" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/zhan.qing.hua.670626" target="_blank" rel="noopener noreferrer" class="hover:text-gold transition-colors" title="Facebook">
+                        <i class="fa-brands fa-facebook"></i>
+                    </a>
+                    <a href="#" class="hover:text-gold transition-colors" title="YouTube">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+                </div>
+                <p class="text-xs text-stone-500">© 2026 山與海的呼喚. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="route-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 sm:p-8 relative shadow-2xl space-y-6 border border-stone-200 dark:border-slate-800">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 text-xl w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div>
+                <span id="modal-category" class="bg-forest-100 text-forest-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-bold px-3 py-1 rounded-full">類別</span>
+                <h3 id="modal-title" class="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-2">路線名稱</h3>
+                <p id="modal-stats" class="text-xs text-stone-500 dark:text-stone-400 mt-1">行程數據</p>
+            </div>
+            <p id="modal-desc" class="text-stone-600 dark:text-stone-300 text-sm leading-relaxed">路線詳細介紹內容...</p>
+            <div class="pt-4 border-t border-stone-100 dark:border-slate-800 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-5 py-2 rounded-full border border-stone-300 dark:border-slate-700 text-stone-600 dark:text-stone-300 text-sm hover:bg-stone-100 dark:hover:bg-slate-800">關閉</button>
+                <button onclick="downloadGpxMock()" class="px-5 py-2 rounded-full bg-forest-800 text-white text-sm hover:bg-forest-900">下載 GPX 軌跡</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast-msg" class="fixed bottom-6 right-6 z-50 bg-forest-800 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-circle-check text-gold"></i>
+        <span id="toast-text">通知內容</span>
+    </div>
+
+    <script>
+        // Navbar Scroll Background Change
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-panel-dark', 'shadow-lg');
+                nav.classList.remove('bg-transparent');
+            } else {
+                nav.classList.remove('glass-panel-dark', 'shadow-lg');
+                nav.classList.add('bg-transparent');
+            }
+        });
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Theme Toggle Function (Light / Dark Mode)
+        let isDarkMode = false;
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const iconMobile = document.getElementById('theme-icon-mobile');
+
+            if (isDarkMode) {
+                html.classList.add('dark');
+                if(icon) icon.className = "fa-solid fa-sun text-gold";
+                if(iconMobile) iconMobile.className = "fa-solid fa-sun text-gold";
+                showToast("已切換至深色沉浸模式");
+            } else {
+                html.classList.remove('dark');
+                if(icon) icon.className = "fa-solid fa-moon";
+                if(iconMobile) iconMobile.className = "fa-solid fa-moon";
+                showToast("已切換至明亮模式");
+            }
+        }
+
+        // Real Background Audio Player Toggle
+        let isAudioPlaying = false;
+        const bgAudio = document.getElementById('bg-audio');
+
+        function toggleAudio() {
+            const icon = document.getElementById('sound-icon');
+            const text = document.getElementById('sound-text');
+            const iconMobile = document.getElementById('sound-icon-mobile');
+            const textMobile = document.getElementById('sound-text-mobile');
+            
+            if (!isAudioPlaying) {
+                bgAudio.play().then(() => {
+                    isAudioPlaying = true;
+                    if(icon) icon.className = "fa-solid fa-volume-high text-gold animate-pulse";
+                    if(text) text.innerText = "音樂播放中";
+                    if(iconMobile) iconMobile.className = "fa-solid fa-volume-high text-gold animate-pulse";
+                    if(textMobile) textMobile.innerText = "音樂播放中";
+                    showToast("背景音樂已開啟");
+                }).catch(err => {
+                    console.error("Audio playback error:", err);
+                    showToast("播放音訊時出錯，請稍後重試");
+                });
+            } else {
+                bgAudio.pause();
+                isAudioPlaying = false;
+                if(icon) icon.className = "fa-solid fa-volume-xmark";
+                if(text) text.innerText = "背景音樂";
+                if(iconMobile) iconMobile.className = "fa-solid fa-volume-xmark";
+                if(textMobile) textMobile.innerText = "背景音樂";
+                showToast("背景音樂已關閉");
+            }
+        }
+
+        // Filter Routes Function
+        function filterRoutes(category) {
+            const cards = document.querySelectorAll('.route-card');
+            const btns = document.querySelectorAll('#filter-buttons .filter-btn');
+
+            btns.forEach(btn => {
+                btn.classList.remove('active', 'bg-forest-800', 'text-white');
+                btn.classList.add('bg-white', 'dark:bg-slate-700', 'text-stone-700', 'dark:text-stone-200');
+            });
+            event.target.classList.add('active', 'bg-forest-800', 'text-white');
+            event.target.classList.remove('bg-white', 'dark:bg-slate-700', 'text-stone-700', 'dark:text-stone-200');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Modal Controls
+        function openModal(title, category, stats, desc) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-category').innerText = category;
+            document.getElementById('modal-stats').innerText = stats;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('route-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('route-modal').classList.add('hidden');
+        }
+
+        function downloadGpxMock() {
+            showToast("GPX 軌跡檔準備完成，開始下載...");
+            closeModal();
+        }
+
+        // Handle Newsletter Form
+        function handleSubscribe(e) {
+            e.preventDefault();
+            const msg = document.getElementById('subscribe-msg');
+            msg.classList.remove('hidden');
+            e.target.reset();
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            const text = document.getElementById('toast-text');
+            text.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
