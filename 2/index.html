@@ -1,0 +1,720 @@
+<調用 Tarot API 製作塔羅牌占卜網頁，加上詳盡的中文
+解牌!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星語塔羅 - 命運神秘占卜</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts (Cinzel for headers & Noto Serif TC for readable traditional Chinese text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Noto Serif TC', 'serif'],
+            cinzel: ['Cinzel', 'serif']
+          },
+          colors: {
+            mystic: {
+              900: '#0b091a',
+              800: '#14112c',
+              700: '#1e1a40',
+              600: '#2d275e',
+              gold: '#d4af37',
+              goldLight: '#f3e5ab',
+              purple: '#8b5cf6'
+            }
+          },
+          boxShadow: {
+            'glow-gold': '0 0 25px rgba(212, 175, 55, 0.4)',
+            'glow-purple': '0 0 25px rgba(139, 92, 246, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at center, #1a1638 0%, #090714 100%);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* Card Flip Animation Styles */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+    }
+    .card-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0.75rem;
+    }
+    .card-back {
+      /* Card back artwork pattern */
+      background: linear-gradient(135deg, #1e1b4b 0%, #31104b 100%);
+      border: 2px solid #d4af37;
+    }
+    .card-front {
+      transform: rotateY(180deg);
+      background: #0f172a;
+      border: 2px solid #d4af37;
+    }
+    .is-reversed-img {
+      transform: rotate(180deg);
+    }
+
+    /* Starry background effect */
+    .stars-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      background-color: #ffffff;
+      border-radius: 50%;
+      animation: pulse-star var(--duration) infinite ease-in-out;
+    }
+    @keyframes pulse-star {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.9; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body class="relative flex flex-col min-h-screen">
+  <!-- Dynamic Background Stars -->
+  <div id="stars" class="stars-container"></div>
+
+  <!-- Header Section -->
+  <header class="relative z-10 pt-8 pb-4 text-center px-4">
+    <div class="inline-flex items-center justify-center space-x-2 text-mystic-gold mb-2">
+      <i class="fa-solid fa-moon text-2xl animate-pulse"></i>
+      <h1 class="font-cinzel text-3xl md:text-5xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200">
+        MYSTIC TAROT
+      </h1>
+      <i class="fa-solid fa-star text-2xl animate-pulse"></i>
+    </div>
+    <p class="text-slate-400 text-sm md:text-base tracking-widest mt-1">星語塔羅 · 探索靈魂與未來的靈性指引</p>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="relative z-10 flex-1 container mx-auto px-4 max-w-5xl py-6 flex flex-col items-center">
+    
+    <!-- Controls & Spread Selector -->
+    <section id="setup-section" class="w-full max-w-2xl bg-mystic-800/80 backdrop-blur-md rounded-2xl p-6 border border-mystic-gold/30 shadow-2xl mb-8 transition-all">
+      <h2 class="text-xl font-semibold text-mystic-goldLight text-center mb-4 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> 選擇占卜陣型與輸入疑問
+      </h2>
+      
+      <!-- Question Input -->
+      <div class="mb-5">
+        <label for="user-question" class="block text-xs md:text-sm text-slate-300 mb-2">在心中默想您的問題（選填）：</label>
+        <input type="text" id="user-question" placeholder="例如：我近期的事業發展趨勢如何？" 
+               class="w-full px-4 py-3 bg-mystic-900/90 border border-mystic-gold/30 rounded-xl focus:outline-none focus:border-mystic-gold text-slate-100 placeholder-slate-500 transition">
+      </div>
+
+      <!-- Spread Type Buttons -->
+      <div class="mb-6">
+        <label class="block text-xs md:text-sm text-slate-300 mb-2">選擇牌陣模式：</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="spread-selector">
+          <button data-spread="time" class="spread-btn active flex items-center p-3 rounded-xl border border-mystic-gold bg-mystic-gold/20 text-mystic-goldLight transition hover:bg-mystic-gold/30">
+            <i class="fa-solid fa-hourglass-half text-lg mr-3"></i>
+            <div class="text-left">
+              <div class="font-bold text-sm">時間流程牌陣</div>
+              <div class="text-xs text-slate-400">過去 (Past) · 現在 (Present) · 未來 (Future)</div>
+            </div>
+          </button>
+          <button data-spread="action" class="spread-btn flex items-center p-3 rounded-xl border border-slate-700 bg-mystic-900/60 text-slate-300 transition hover:bg-mystic-700">
+            <i class="fa-solid fa-compass text-lg mr-3"></i>
+            <div class="text-left">
+              <div class="font-bold text-sm">抉擇指引牌陣</div>
+              <div class="text-xs text-slate-400">現狀 (Situation) · 對策 (Action) · 結果 (Outcome)</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="draw-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-mystic-900 font-bold text-lg shadow-glow-gold hover:opacity-95 active:scale-[0.99] transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-dharmachakra animate-spin-slow"></i> 抽取 3 張塔羅牌
+      </button>
+    </section>
+
+    <!-- Cards Display Area -->
+    <section id="cards-display" class="w-full hidden mb-12">
+      <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
+        <!-- 3 Cards will be dynamically injected here -->
+      </div>
+      
+      <!-- Reset / Re-draw Button -->
+      <div class="text-center mt-8">
+        <button id="reset-btn" class="px-6 py-2.5 rounded-full border border-mystic-gold/50 text-mystic-goldLight bg-mystic-800/80 hover:bg-mystic-gold hover:text-mystic-900 transition text-sm font-semibold shadow-lg">
+          <i class="fa-solid fa-rotate-left mr-2"></i>重新抽取
+        </button>
+      </div>
+    </section>
+
+    <!-- Detailed Interpretation Section -->
+    <section id="interpretation-section" class="w-full hidden max-w-4xl">
+      <div class="bg-mystic-800/90 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-mystic-gold/30 shadow-2xl">
+        <h3 class="text-2xl font-cinzel font-bold text-mystic-gold text-center mb-2 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-scroll"></i> 塔羅占卜詳細靈性解讀
+        </h3>
+        <p id="user-question-display" class="text-center text-slate-400 italic text-sm mb-8 border-b border-mystic-gold/20 pb-4"></p>
+
+        <!-- Detailed Card Readings Container -->
+        <div id="cards-interpretation-container" class="space-y-8">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Overall Synthesis Advice -->
+        <div class="mt-8 pt-6 border-t border-mystic-gold/30 bg-mystic-900/60 rounded-xl p-5 border border-mystic-purple/30">
+          <h4 class="text-lg font-bold text-amber-300 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-star-and-crescent"></i> 綜合智慧指引與啟示
+          </h4>
+          <p id="overall-advice" class="text-slate-300 text-sm md:text-base leading-relaxed">
+            <!-- Dynamic Overall Reading -->
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 py-6 text-center text-xs text-slate-500 border-t border-mystic-gold/10">
+    <p>© 星語塔羅 Mystic Tarot Reading · 靜心思考，順應自然力量</p>
+  </footer>
+
+  <!-- Inline Script with API Fetch & Comprehensive Fallback Database -->
+  <script>
+    // ----------------------------------------------------
+    // Comprehensive Traditional Chinese Fallback Database
+    // ----------------------------------------------------
+    const FALLBACK_DECK = [
+      {
+        name_en: "The Fool",
+        name_zh: "愚者",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg",
+        upright: {
+          keywords: ["純真", "自由", "開端", "冒險", "潛力"],
+          meaning: "愚者代表一個充滿無限可能的全新開始。你正站在旅程的起點，帶著純真與勇氣邁向未知。這張牌鼓勵你信任直覺，勇敢踏出第一步，放手一搏。",
+          advice: "抱持開放的心態接受新挑戰，不必過度擔憂結果，享受探索過程中的快樂。"
+        },
+        reversed: {
+          keywords: ["輕率", "魯莽", "冒失", "延誤", "迷茫"],
+          meaning: "逆位的愚者暗示著當前可能存在衝動行事、缺乏規劃的風險。你可能急於求成而忽視了潛在的危機，或者因為害怕失敗而猶豫不前。",
+          advice: "腳踏實地，在採取重大行動前多做功課，切勿因一時衝動做出盲目的決定。"
+        }
+      },
+      {
+        name_en: "The Magician",
+        name_zh: "魔術師",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg",
+        upright: {
+          keywords: ["創造力", "資源整合", "專注", "執行力", "自信"],
+          meaning: "魔術師象徵著天賦、技巧與強大的行動力。你目前已經具備達成目標所需的一切工具與能力，只要專注目標並付諸實行，必能創造驚人成果。",
+          advice: "善用身邊的資源與自身優勢，展現果斷的執行力，將想法轉化為具體行動。"
+        },
+        reversed: {
+          keywords: ["才華未展", "意圖不軌", "缺乏專注", "延誤", "欺瞞"],
+          meaning: "逆位的魔術師可能代表才華受到壓抑、計劃停滯不前，或者存在溝通誤解與欺瞞。警惕不要將聰明才智用在不當的地方。",
+          advice: "重新審視自己的初衷，調整學習與行動策略，避免流於表面或投機取巧。"
+        }
+      },
+      {
+        name_en: "The High Priestess",
+        name_zh: "女祭司",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/8/88/RWS_Tarot_02_High_Priestess.jpg",
+        upright: {
+          keywords: ["直覺", "潛意識", "智慧", "平靜", "等待"],
+          meaning: "女祭司代表深層的直覺、內在智慧與平靜。這張牌提醒你靜下心來聽聽內心的聲音，答案往往不在外界的紛擾中，而在你的潛意識深處。",
+          advice: "保持冷靜與耐心，暫時不必急於下決定，多觀望並信任自己的第一直覺。"
+        },
+        reversed: {
+          keywords: ["情緒壓抑", "忽視直覺", "表面化", "秘事暴露", "焦慮"],
+          meaning: "逆位女祭司暗示你可能忽視了內心的聲音，被外界雜音牽著鼻子走，或者過度壓抑情感導致內心焦慮不安。",
+          advice: "撥開情緒的迷霧，面對真實的自我，別讓偏見與表面現象遮蔽了事情的真相。"
+        }
+      },
+      {
+        name_en: "The Empress",
+        name_zh: "皇后",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/d/d2/RWS_Tarot_03_Empress.jpg",
+        upright: {
+          keywords: ["豐盛", "母性", "滋養", "美麗", "創造力"],
+          meaning: "皇后象徵物質與精神上的極大豐盛。此牌代表著愛的滋養、和諧的關係以及成功的孕育，是充滿生命力與美感的正面預兆。",
+          advice: "帶著愛與包容對待身邊的人事物，好好照顧自己與他人，迎接收穫的喜悅。"
+        },
+        reversed: {
+          keywords: ["過度保護", "缺乏安全感", "停滯", "浪費", "關係緊張"],
+          meaning: "逆位皇后可能意味著過度控制、過度依賴或物質上的浪費，也可能代表自我照顧不足導致的內心空虛。",
+          advice: "學會適度放手，給予彼此空間，重新找回生活與情感上的自我平衡。"
+        }
+      },
+      {
+        name_en: "The Emperor",
+        name_zh: "皇帝",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/c/c3/RWS_Tarot_04_Emperor.jpg",
+        upright: {
+          keywords: ["權威", "秩序", "穩定", "領導力", "自律"],
+          meaning: "皇帝代表堅固的結構、秩序與領導魄力。當前需要透過嚴謹的規劃與自律來建立穩固的基石，展現主導權與責任感。",
+          advice: "建立清晰的規則與界線，展現果斷與自信，為長期發展打下紮實基礎。"
+        },
+        reversed: {
+          keywords: ["專制", "缺乏自律", "剛愎自用", "控制欲", "混亂"],
+          meaning: "逆位皇帝警示著可能過度威權、僵化刻板，或是缺乏自律導致秩序崩潰。不要讓固執阻礙了靈活應變的可能。",
+          advice: "學會傾聽不同意見，放下過度的控制欲，在堅持原則的同時保有適度彈性。"
+        }
+      },
+      {
+        name_en: "The Hierophant",
+        name_zh: "教皇",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_05_Hierophant.jpg",
+        upright: {
+          keywords: ["傳統", "導師", "信仰", "團隊體制", "學習"],
+          meaning: "教皇象徵傳統智慧、道德規範與貴人相助。這張牌代表獲得經驗豐富者的指導，或在既定體制中找到依靠與同盟。",
+          advice: "向值得信賴的長輩或專業人士尋求建議，遵守社會規範與團隊合作精神。"
+        },
+        reversed: {
+          keywords: ["墨守成規", "打破傳統", "教條主義", "盲從", "獨立思考"],
+          meaning: "逆位教皇提醒你不要盲目遵從無理的規範或權威，當傳統僵化成為束縛時，需要勇敢思考獨立創新的道路。",
+          advice: "審視當前的制度或建議是否真的適合你，勇敢走出屬於自己的獨特道路。"
+        }
+      },
+      {
+        name_en: "The Lovers",
+        name_zh: "戀人",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/3/3a/TheLovers.jpg",
+        upright: {
+          keywords: ["愛與和諧", "重要選擇", "契合", "價值觀", "合作"],
+          meaning: "戀人牌象徵著深層的情感連結、和諧的夥伴關係以及重要的價值觀抉擇。你正面臨人生中需要遵循內心渴望的選擇。",
+          advice: "基於真誠與內心真實價值做出選擇，建立在信任與尊重基礎上的合作將大有獲益。"
+        },
+        reversed: {
+          keywords: ["價值分歧", "溝通障礙", "猶豫不決", "不和諧", "誘惑"],
+          meaning: "逆位戀人代表關係中的衝突、價值觀不合或面臨不良誘惑。這意味著抉擇時可能帶來混亂或逃避責任。",
+          advice: "認清彼此差異，誠實面對內心焦慮，切勿為了短期利益做出違背原則的妥協。"
+        }
+      },
+      {
+        name_en: "The Chariot",
+        name_zh: "戰車",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg",
+        upright: {
+          keywords: ["意志力", "勝利", "克服困難", "方向感", "自控"],
+          meaning: "戰車象徵強大的意志力與突破重圍的衝勁。即使面對對立的情勢或重重障礙，只要保持專注與自控，終將取得勝利。",
+          advice: "明確你的方向與目標，調和心中的衝撞與矛盾，勇往直前邁向目標。"
+        },
+        reversed: {
+          keywords: ["失去控制", "失控衝動", "方向迷失", "挫折", "力不從心"],
+          meaning: "逆位戰車可能代表缺乏方向感、衝動莽撞導致失控，或是被內在與外在的阻力壓垮，陷入進退維谷的窘境。",
+          advice: "暫時踩煞車，重新整理情緒與行程，找回掌控權後再出發。"
+        }
+      },
+      {
+        name_en: "Strength",
+        name_zh: "力量",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg",
+        upright: {
+          keywords: ["柔克剛", "內在勇氣", "耐心", "包容", "自律"],
+          meaning: "力量牌象徵以溫柔、耐心與內在堅韌克服困難。它不是強權鎮壓，而是透過智慧、同理心與自控力征服恐懼與慾望。",
+          advice: "保持冷靜與自信，用溫和而堅定的態度處理棘手問題，發揮以柔克剛的力量。"
+        },
+        reversed: {
+          keywords: ["自我懷疑", "軟弱", "情緒失控", "恐懼", "力不從心"],
+          meaning: "逆位力量意味著內心缺乏自信、屈服於恐懼，或因情緒失控而採取過激反應，感到身心俱疲。",
+          advice: "重新建立自我肯定，接受自己的脆弱，尋求內心的平靜而非盲目抗爭。"
+        }
+      },
+      {
+        name_en: "The Hermit",
+        name_zh: "隱士",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg",
+        upright: {
+          keywords: ["內省", "尋求真理", "沉思", "孤獨", "心靈指引"],
+          meaning: "隱士代表遠離外界喧囂，走向內心探索的時刻。這是一段尋求內在真理、沉思與沉澱的寶貴時期。",
+          advice: "給自己留出獨處的時間，靜心思考未來的方向，答案早已潛藏在你的智慧中。"
+        },
+        reversed: {
+          keywords: ["孤立孤僻", "拒絕交流", "迷茫", "逃避現實", "偏執"],
+          meaning: "逆位隱士暗示過度孤立自己，或者陷入自怨自艾的封閉狀態，因為害怕社交而逃避與外界溝通。",
+          advice: "不要過度鑽牛角尖，適時向外求助，敞開心扉與信任的人進行實質交流。"
+        }
+      },
+      {
+        name_en: "Wheel of Fortune",
+        name_zh: "命運之輪",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg",
+        upright: {
+          keywords: ["轉機", "命運契機", "週期循環", "幸運", "順應自然"],
+          meaning: "命運之輪象徵生命的起伏週期與不可逆轉的變革。幸運與轉機即將降臨，事情正朝著積極方向發展。",
+          advice: "順應時勢變化，把握當前浮現的機會，以開放的心態擁抱命運的安排。"
+        },
+        reversed: {
+          keywords: ["運勢低迷", "抗拒改變", "重複錯誤", "不可控變數", "延誤"],
+          meaning: "逆位命運之輪意味著遇到了暫時的阻礙或不幸的循環，可能因為抗拒改變而感到失落與沮喪。",
+          advice: "接受眼前的變局，保持耐心，記住低谷過後必定是上升的開始。"
+        }
+      },
+      {
+        name_en: "The Sun",
+        name_zh: "太陽",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg",
+        upright: {
+          keywords: ["光明", "成功", "喜悅", "活力", "真誠"],
+          meaning: "太陽是塔羅中最極致吉祥的牌之一。象徵著無比的活力、清晰的未來、豐碩的成果與純粹的快樂。",
+          advice: "充滿自信地展現自我，分享你的喜悅，享受當前溫暖而光明的時光。"
+        },
+        reversed: {
+          keywords: ["暫時陰霾", "過度樂觀", "精力耗盡", "延遲成功", "雲遮日"],
+          meaning: "逆位太陽並非代表不幸，而是烏雲暫時遮蔽了陽光。成功可能會稍有延遲，或者你正感到熱情有所消退。",
+          advice: "保持樂觀的心態，重新充電，小小的挫折無法阻擋最終的光明。"
+        }
+      },
+      {
+        name_en: "The World",
+        name_zh: "世界",
+        arcana: "Major",
+        image: "https://upload.wikimedia.org/wikipedia/commons/ff/ff/RWS_Tarot_21_World.jpg",
+        upright: {
+          keywords: ["圓滿", "完成", "成就", "整合", "新階段"],
+          meaning: "世界牌代表漫長旅程的完美終點與大圓滿。你的努力獲得了實質的成果，準備跨入更高階的人生階段。",
+          advice: "為自己的成就喝彩，感恩一路上的收穫，準備迎接下一個精彩的人生篇章。"
+        },
+        reversed: {
+          keywords: ["未竟之業", "欠缺臨門一腳", "拖延", "遺撼", "停滯"],
+          meaning: "逆位世界暗示事情接近尾聲但仍缺臨門一腳，或是因細節疏忽而無法完美收官，留下少許遺憾。",
+          advice: "檢視尚未完成的環節，補齊漏洞，堅持到底才能迎來真正的圓滿。"
+        }
+      }
+    ];
+
+    // Card Spreads Mapping Definitions
+    const SPREAD_DEFINITIONS = {
+      time: [
+        { key: "past", label: "過去 (Past)", desc: "影響當前局勢的背景起源與遠因" },
+        { key: "present", label: "現在 (Present)", desc: "當前所處的狀態、核心課題與考驗" },
+        { key: "future", label: "未來 (Future)", desc: "若維持現狀將走向的發展發展與趨勢" }
+      ],
+      action: [
+        { key: "situation", label: "現狀 (Situation)", desc: "您目前所面臨的真實情境與環境" },
+        { key: "action", label: "對策 (Action)", desc: "建議採取的關鍵行動與心態調整" },
+        { key: "outcome", label: "結果 (Outcome)", desc: "採取行動後最終預期獲得的突破與結果" }
+      ]
+    };
+
+    let currentSpreadType = 'time';
+    let drawnCards = [];
+
+    // ----------------------------------------------------
+    // Starfield Generator
+    // ----------------------------------------------------
+    function generateStarfield() {
+      const container = document.getElementById('stars');
+      container.innerHTML = '';
+      const count = 50;
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+        container.appendChild(star);
+      }
+    }
+
+    // ----------------------------------------------------
+    // API Fetcher with Fallback Handler
+    // ----------------------------------------------------
+    async function fetchTarotCards(count = 3) {
+      try {
+        // Attempting standard Tarot API fetch with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        const response = await fetch(`https://tarotapi.dev/api/v1/cards/random?n=${count}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('API Response Error');
+        const data = await response.json();
+        
+        // Map API response and enrich with fallback local Traditional Chinese DB
+        return data.cards.map(card => enrichCardData(card));
+      } catch (err) {
+        console.warn('Tarot API network request failed or timed out. Using high-quality built-in card library fallback.', err);
+        return getRandomFallbackCards(count);
+      }
+    }
+
+    // Enrich Card API output with Chinese interpretations
+    function enrichCardData(apiCard) {
+      // Search matching local card by name
+      const localMatch = FALLBACK_DECK.find(
+        item => item.name_en.toLowerCase() === apiCard.name.toLowerCase()
+      );
+
+      const isReversed = Math.random() < 0.35; // 35% chance of being reversed
+
+      if (localMatch) {
+        return {
+          ...localMatch,
+          isReversed: isReversed
+        };
+      }
+
+      // Basic mapping for major arcana if not in fallback array
+      return {
+        name_en: apiCard.name,
+        name_zh: apiCard.name,
+        arcana: apiCard.type,
+        image: "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg",
+        isReversed: isReversed,
+        upright: {
+          keywords: apiCard.meaning_up.split(',').slice(0, 4),
+          meaning: `正位象徵：${apiCard.meaning_up}。事物正朝著正向且順暢的方向前進。`,
+          advice: "積極把握目前的優勢，順勢而為。"
+        },
+        reversed: {
+          keywords: apiCard.meaning_rev.split(',').slice(0, 4),
+          meaning: `逆位象徵：${apiCard.meaning_rev}。注意內部阻力或能量卡頓。`,
+          advice: "適時放慢腳步，檢視潛在隱患。"
+        }
+      };
+    }
+
+    function getRandomFallbackCards(count) {
+      const shuffled = [...FALLBACK_DECK].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count).map(card => ({
+        ...card,
+        isReversed: Math.random() < 0.35
+      }));
+    }
+
+    // ----------------------------------------------------
+    // UI Renderers & Interactions
+    // ----------------------------------------------------
+    function initSpreadSelector() {
+      const buttons = document.querySelectorAll('.spread-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => {
+            b.classList.remove('active', 'border-mystic-gold', 'bg-mystic-gold/20', 'text-mystic-goldLight');
+            b.classList.add('border-slate-700', 'bg-mystic-900/60', 'text-slate-300');
+          });
+          btn.classList.add('active', 'border-mystic-gold', 'bg-mystic-gold/20', 'text-mystic-goldLight');
+          btn.classList.remove('border-slate-700', 'bg-mystic-900/60', 'text-slate-300');
+          currentSpreadType = btn.getAttribute('data-spread');
+        });
+      });
+    }
+
+    async function handleDrawCards() {
+      const drawBtn = document.getElementById('draw-btn');
+      const cardsDisplay = document.getElementById('cards-display');
+      const cardsGrid = document.getElementById('cards-grid');
+      const interpretationSection = document.getElementById('interpretation-section');
+      const userQuestion = document.getElementById('user-question').value.trim();
+
+      // UI Loading state
+      drawBtn.disabled = true;
+      drawBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 連結星宿能量中...`;
+
+      // Fetch cards
+      drawnCards = await fetchTarotCards(3);
+
+      // Render placeholders
+      cardsGrid.innerHTML = '';
+      const positions = SPREAD_DEFINITIONS[currentSpreadType];
+
+      positions.forEach((pos, idx) => {
+        const cardData = drawnCards[idx];
+        const cardEl = document.createElement('div');
+        cardEl.className = 'flex flex-col items-center';
+        
+        cardEl.innerHTML = `
+          <div class="text-mystic-gold font-bold text-sm mb-2 tracking-wider flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-mystic-gold inline-block"></span>
+            ${pos.label}
+          </div>
+          <div class="perspective-1000 w-48 h-80 cursor-pointer card-container" onclick="flipCard(this)">
+            <div class="card-inner shadow-2xl hover:shadow-glow-purple">
+              <!-- Card Back -->
+              <div class="card-face card-back flex flex-col items-center justify-center p-3 text-center">
+                <div class="w-full h-full border border-mystic-gold/40 rounded-lg p-2 flex flex-col items-center justify-center">
+                  <i class="fa-solid fa-compass-drafting text-4xl text-mystic-gold/60 mb-2"></i>
+                  <p class="font-cinzel text-xs text-mystic-goldLight">TAP TO REVEAL</p>
+                </div>
+              </div>
+              <!-- Card Front -->
+              <div class="card-face card-front flex flex-col items-center p-3 text-center justify-between">
+                <div class="text-xs font-bold text-mystic-gold border-b border-mystic-gold/30 w-full pb-1">
+                  ${cardData.name_zh} (${cardData.name_en})
+                </div>
+                <div class="overflow-hidden rounded border border-slate-700 my-2 w-32 h-44 bg-black/40 flex items-center justify-center">
+                  <img src="${cardData.image}" alt="${cardData.name_zh}" class="w-full h-full object-cover ${cardData.isReversed ? 'is-reversed-img' : ''}" onerror="this.src='https://placehold.co/150x250/1e1a40/d4af37?text=Tarot+Card'">
+                </div>
+                <div class="text-xs font-semibold ${cardData.isReversed ? 'text-amber-400' : 'text-emerald-400'}">
+                  ${cardData.isReversed ? '【逆位】' : '【正位】'}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-400 text-center mt-2 max-w-[200px]">${pos.desc}</div>
+        `;
+        cardsGrid.appendChild(cardEl);
+      });
+
+      // Reset Draw Button State
+      drawBtn.disabled = false;
+      drawBtn.innerHTML = `<i class="fa-solid fa-dharmachakra"></i> 重新抽取 3 張塔羅牌`;
+
+      // Show sections
+      cardsDisplay.classList.remove('hidden');
+      interpretationSection.classList.remove('hidden');
+
+      // Scroll smoothly to cards
+      cardsDisplay.scrollIntoView({ behavior: 'smooth' });
+
+      // Auto flip cards with sequence
+      setTimeout(() => {
+        const containers = document.querySelectorAll('.card-container');
+        containers.forEach((c, index) => {
+          setTimeout(() => {
+            c.querySelector('.card-inner').classList.add('is-flipped');
+          }, index * 400);
+        });
+      }, 500);
+
+      // Render detailed text reading
+      renderInterpretation(userQuestion);
+    }
+
+    function flipCard(el) {
+      el.querySelector('.card-inner').classList.toggle('is-flipped');
+    }
+
+    function renderInterpretation(userQuestion) {
+      const questionDisplay = document.getElementById('user-question-display');
+      const container = document.getElementById('cards-interpretation-container');
+      const overallAdviceEl = document.getElementById('overall-advice');
+
+      if (userQuestion) {
+        questionDisplay.textContent = `心靈問題詢問：「${userQuestion}」`;
+      } else {
+        questionDisplay.textContent = `通用綜合指引與運勢解讀`;
+      }
+
+      container.innerHTML = '';
+      const positions = SPREAD_DEFINITIONS[currentSpreadType];
+
+      drawnCards.forEach((card, index) => {
+        const pos = positions[index];
+        const stateData = card.isReversed ? card.reversed : card.upright;
+        const statusText = card.isReversed ? "逆位 (Reversed)" : "正位 (Upright)";
+        const statusBadgeClass = card.isReversed ? "bg-amber-900/40 text-amber-300 border-amber-600/40" : "bg-emerald-900/40 text-emerald-300 border-emerald-600/40";
+
+        const cardDetailHtml = `
+          <div class="bg-mystic-900/80 rounded-xl p-5 border border-mystic-gold/20 shadow-md transition hover:border-mystic-gold/40">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/60 pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 text-xs font-bold rounded-md bg-mystic-gold/20 text-mystic-gold">
+                  ${pos.label}
+                </span>
+                <h4 class="text-xl font-bold text-slate-100">
+                  ${card.name_zh} <span class="text-sm font-cinzel text-slate-400">(${card.name_en})</span>
+                </h4>
+              </div>
+              <span class="px-3 py-1 text-xs font-semibold rounded-full border ${statusBadgeClass}">
+                ${statusText}
+              </span>
+            </div>
+
+            <!-- Core Keywords -->
+            <div class="flex flex-wrap gap-2 mb-3">
+              <span class="text-xs text-slate-400 self-center">核心關鍵字：</span>
+              ${stateData.keywords.map(kw => `<span class="px-2 py-0.5 text-xs rounded bg-mystic-700 text-mystic-goldLight border border-mystic-gold/20"># ${kw}</span>`).join('')}
+            </div>
+
+            <!-- Detailed Explanation -->
+            <div class="space-y-3 text-sm leading-relaxed text-slate-300">
+              <p><strong class="text-mystic-gold">【牌義牌況解析】</strong> ${stateData.meaning}</p>
+              <p><strong class="text-amber-300">【對應位置啟示】</strong> 在「${pos.label}」位置出現${card.isReversed ? '逆位' : '正位'}的${card.name_zh}，暗示著${pos.desc}方面，${stateData.advice}</p>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardDetailHtml);
+      });
+
+      // Build overall summary
+      const firstCardName = drawnCards[0].name_zh;
+      const lastCardName = drawnCards[2].name_zh;
+      overallAdviceEl.innerHTML = `
+        當前牌陣顯示了一個從 <strong>${firstCardName}</strong> 延伸至 <strong>${lastCardName}</strong> 的能量轉化歷程。
+        整體而言，塔羅牌建議您保持心境平靜，接受過程中的轉變與考驗。關注內心真正的渴望，付諸實際行動，並隨時調整步伐，未來將能走向更具啟發性的正面格局。
+      `;
+    }
+
+    function resetReading() {
+      document.getElementById('cards-display').classList.add('hidden');
+      document.getElementById('interpretation-section').classList.add('hidden');
+      document.getElementById('user-question').value = '';
+      document.getElementById('setup-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Initialize Event Listeners
+    window.addEventListener('DOMContentLoaded', () => {
+      generateStarfield();
+      initSpreadSelector();
+
+      document.getElementById('draw-btn').addEventListener('click', handleDrawCards);
+      document.getElementById('reset-btn').addEventListener('click', resetReading);
+    });
+  </script>
+</body>
+</html>
